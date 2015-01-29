@@ -216,7 +216,6 @@ class BadgeAdmin(AdminOnlyMixin, ModelView):
             
             # Begin override create_model behavior
             user = model.tblclients
-            print request.form
             
             '''
             Auto-activation:
