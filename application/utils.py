@@ -130,9 +130,9 @@ def verify_waiver_signed(firstname=None, lastname=None, email=None):
         
         # E-mail in Smartwaiver is not required, so it can be None
         if (p_firstname and p_lastname and p_email and firstname and lastname and email):
-            firstname_match = (p_firstname.text.lower() == firstname.lower())
-            lastname_match = (p_lastname.text.lower() == lastname.lower())
-            email_match = (p_email.text.lower() == email.lower())
+            firstname_match = (p_firstname.text.strip().lower() == firstname.strip().lower())
+            lastname_match = (p_lastname.text.strip().lower() == lastname.strip().lower())
+            email_match = (p_email.text.strip().lower() == email.strip().lower())
         
         if (firstname_match and lastname_match and email_match):
             break
