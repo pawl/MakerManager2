@@ -88,7 +88,7 @@ def change_badge_status(status=None, whmcs_user_id=None, badge=None):
                 db.session.add(record)
                 db.session.commit()
                 
-                messages.append(message=html)
+                messages.append(html)
             elif html == "User Removed Successfully":
                 # record deactivation in log
                 record = BadgesHistory(whmcs_user_id, current_user.email, str(badge), status, datetime.now())
@@ -128,11 +128,11 @@ def verify_waiver_signed(firstname=None, lastname=None, email=None):
         p_lastname = participant.find('lastname')
         p_email = participant.find('primary_email')
         
-        # email can be None
-        if p_firstname and p_lastname and p_email:
-            firstname_match = (p_firstname.text == firstname)
-            lastname_match = (p_lastname.text == lastname)
-            email_match = (p_email.text == email)
+        # E-mail in Smartwaiver is not required, so it can be None
+        if (p_firstname and p_lastname and p_email and firstname and lastname and email):
+            firstname_match = (p_firstname.text.lower() == firstname.lower())
+            lastname_match = (p_lastname.text.lower() == lastname.lower())
+            email_match = (p_email.text.lower() == email.lower())
         
         if (firstname_match and lastname_match and email_match):
             break
