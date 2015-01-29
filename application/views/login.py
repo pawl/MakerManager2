@@ -15,9 +15,9 @@ class LoginForm(Form):
 
 class Login(BaseView):
     def is_visible(self):
-        ''' Login link is hardcoded in base.html.
+        """ Login link is hardcoded in base.html.
             No need to use framework to display the link.
-        '''
+        """
         return False
         
     @expose('/', methods=('GET', 'POST'))

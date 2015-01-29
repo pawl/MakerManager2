@@ -6,10 +6,10 @@ from flask.ext.login import current_user
 
 
 class BadgeAPI(AdminOnlyMixin, BaseView):
-    ''' API endpoint for activating/deactivating badges.        
+    """ API endpoint for activating/deactivating badges.        
         
         Note: WHMCS has an automatic trigger which uses this deactivate overdue users.
-    '''
+    """
     def is_accessible(self):
         # bypass login if user has a valid API key
         api_key = request.args.get('apiKey')

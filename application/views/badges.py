@@ -17,6 +17,7 @@ from wtforms.validators import ValidationError, DataRequired, InputRequired
 from flask.ext.admin.model.fields import ListEditableFieldList
 from flask.ext.admin.model.widgets import XEditableWidget
 
+
 # adds custom options (active, deactivated, lost) to x-editable
 class CustomWidget(XEditableWidget):
     def get_kwargs(self, subfield, kwargs):
@@ -217,7 +218,7 @@ class BadgeAdmin(AdminOnlyMixin, ModelView):
             # Begin override create_model behavior
             user = model.tblclients
             
-            '''
+            """
             Auto-activation:
             * The user has signed a waiver at the Smartwaiver kiosk.
             * User is admin it's the requester's own badge.
@@ -225,7 +226,7 @@ class BadgeAdmin(AdminOnlyMixin, ModelView):
             Set to pending and e-mail admin for action:
             * The user has signed a waiver at the Smartwaiver kiosk.
             * NOT the requestor's own badge and is NOT an admin
-            '''
+            """
             
             if ((current_user.is_admin() or (current_user.email == email))):
                 model.status = "Active"

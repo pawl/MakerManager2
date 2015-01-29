@@ -8,11 +8,11 @@ from application import app
 
 
 def generate_whmcs_url(goto=None):
-    ''' Creates a link that allows an user to visit their billing account
+    """ Creates a link that allows an user to visit their billing account
         http://docs.whmcs.com/AutoAuth
         
         This is helpful because WHMCS doesn't have LDAP support.
-    '''
+    """
     timestamp = str(int(time.time()))
     whmcs_url = app.config['WHMCS_URL']
     key = app.config['AUTO_AUTH_KEY'] # set in WHMCS config
