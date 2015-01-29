@@ -34,7 +34,7 @@ admin.add_view(BillingRedirect('Billing Account', endpoint='billing'))
 admin.add_view(BadgeAdmin(Badges, db.session, name='All Badges', endpoint='badges',
                           category="Manage Badges"))
 
-admin.add_view(BadgesHistoryAdmin(BadgesHistory, db.session, name='Badge Activity',
+admin.add_view(BadgesHistoryAdmin(BadgesHistory, db.session, name='Badge Activity Log',
                                   endpoint='badgehistory', category="Manage Badges"))
 
 admin.add_view(BadgeAPI('Badge API', endpoint='badgeapi'))
