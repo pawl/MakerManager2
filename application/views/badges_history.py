@@ -12,6 +12,7 @@ class BadgesHistoryAdmin(AdminOnlyMixin, ModelView):
     
     list_template = 'list.html'
     
+    column_default_sort = ('change_date', True)
     column_searchable_list = [
         'tblclients.firstname',
         'tblclients.lastname',
