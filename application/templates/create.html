@@ -1,0 +1,79 @@
+{% extends 'admin/master.html' %}
+{% import 'admin/lib.html' as lib with context %}
+
+{% block head %}
+    {{ super() }}
+    {{ lib.form_css() }}
+    <style>
+    .panel-default {
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+    </style>
+{% endblock %}
+
+{% block body %}
+    {% for field in form %}
+        {% if field.errors %}
+        <div class="alert alert-danger">{{ field.label }}: {% for error in field.errors %}{{ error }}{% if not loop.last %}, {% endif %}{% endfor %}</div>
+        {% endif %}
+    {% endfor %}
+
+    <div class="panel panel-default col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+        <div class="panel-heading">
+            <div class="panel-title">Badge Request Form</div>
+        </div>
+        
+        <div class="panel-body" >
+            <form action="" method="POST" role="form" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="tblclients">Member Name</label>
+                    {{ form.tblclients(class="form-control") }}
+                    <p class="help-block">Note: The drop-down only shows paid members without an active badge.</p>
+                </div>
+                
+                <div class="form-group">
+                    <label for="badge">Badge</label>
+                    <input type="text" class="form-control" id="badge" name="badge" placeholder="Badge #">
+                    <p class="help-block">Note: If it's a card, it's only the first number on the left. (usually starts with a zero)</p>
+                </div>
+                
+                <div class="form-group">
+                    <label>
+                        <strong>Has the member signed a liability waiver?</strong>
+                    </label>
+                    <br>
+                    <div class="btn-group" data-toggle="buttons">
+                      <label class="btn btn-primary" id="yes">
+                        <input type="radio" autocomplete="off"> Yes
+                      </label>
+                      <label class="btn btn-primary active">
+                        <input type="radio" autocomplete="off" checked> No
+                      </label>
+                    </div>
+                    <p class="help-block">Note: If the member has not signed a waiver at the kiosk near the entrance of the Makerspace, the request will be denied.</p>
+                </div>
+                
+                <hr>
+                <button class="btn-large btn btn-primary" id="sendit" name="_add_another" type="submit" disabled="disabled">Submit Request</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block tail %}
+    {{ super() }}
+    {{ lib.form_js() }}
+    <script>
+    $('#sendit').attr('disabled', 'disabled');
+    $('.btn-group').mouseup(function() {
+        setTimeout(function() {
+            if ($('#yes').hasClass('active')) {
+                $('#sendit').attr('disabled', false);
+            } else {
+                $('#sendit').attr('disabled', 'disabled');
+            }
+        }, 100);
+    })
+    </script>
+{% endblock %}

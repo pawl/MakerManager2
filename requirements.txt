@@ -1,0 +1,16 @@
+beautifulsoup4==4.3.2
+Flask==0.10.1
+-e git://github.com/mrjoes/flask-admin.git@3a4a02fa8f56ab04faeef6a4c23542f97a4a3812#egg=Flask_Admin-master
+Flask-Login==0.2.11
+Flask-Mandrill==0.2
+Flask-SQLAlchemy==2.0
+itsdangerous==0.24
+Jinja2==2.7.3
+MarkupSafe==0.23
+MySQL-python==1.2.5
+python-ldap==2.4.19
+requests==2.5.1
+six==1.9.0
+SQLAlchemy==0.9.8
+Werkzeug==0.9.6
+WTForms==2.0.2
