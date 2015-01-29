@@ -1,3 +1,5 @@
+import logging
+
 from application import db, app
 from flask.ext.admin.contrib.sqla import ModelView
 from flask import request, redirect, url_for, flash
@@ -196,7 +198,7 @@ class BadgeAdmin(AdminOnlyMixin, ModelView):
         except Exception as ex:
             if (not self.handle_view_exception(ex)) or isinstance(ex, BadgeUpdateException):
                 flash('Failed to update badge status. %s' % (str(ex)), 'error')
-                log.exception('Failed to update badge status.')
+                logging.exception('Failed to update badge status.')
 
             self.session.rollback()
 
@@ -256,7 +258,7 @@ class BadgeAdmin(AdminOnlyMixin, ModelView):
         except Exception as ex:
             if (not self.handle_view_exception(ex)) or isinstance(ex, BadgeUpdateException):
                 flash('Failed to submit badge request. %s' % (str(ex)), 'error')
-                log.exception('Failed to create record.')
+                logging.exception('Failed to create record.')
 
             self.session.rollback()
 
