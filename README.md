@@ -28,6 +28,7 @@ Improvements over MakerManager 1.0
 * Now it sends an e-mail to the person who owns the badge that's being activated.
 * The admin interface is much faster. It also has filters, pagination, and a search - thanks to Flask-Admin.
 * Improved validation on the badge request form. Including a check for whether a duplicate badge is already active.
+* Prevents admins from activating more badges than the user has paid for.
 * A new "active badges" column to see who has too many badges activated.
 * A new "badge activity" log that shows who deactivated/activated a badge and when.
 
