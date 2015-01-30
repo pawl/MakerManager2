@@ -90,7 +90,7 @@ class BadgesHistory(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     whmcs_user_id = db.Column(db.Integer, db.ForeignKey('dms-whmcs.tblclients.id'))
-    changed_by = db.Column(db.String(255))
+    changed_by = db.Column(db.String(255), nullable=True)
     badge = db.Column(db.Integer)
     changed_to = db.Column(db.String(16))
     change_date = db.Column(db.DateTime)

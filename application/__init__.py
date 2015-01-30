@@ -23,6 +23,11 @@ login_manager.login_view = 'login.index' # for @login_required
 mandrill = Mandrill(app)
 
 from application.models import *
+
+# prevent "'AnonymousUserMixin' object has no attribute" errors
+from application.utils import AnonymousUser
+login_manager.anonymous_user = AnonymousUser
+
 from application.views import *
 from application.hooks import *
 

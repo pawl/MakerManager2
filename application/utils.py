@@ -4,36 +4,48 @@ import urllib2
 from flask import flash, url_for, redirect, request
 from application import app, mandrill, db
 from application.models import WHMCSclients, Badges, BadgesHistory
-from flask.ext.login import current_user
+from flask.ext.login import current_user, AnonymousUserMixin
 from bs4 import BeautifulSoup
 from datetime import datetime
 
 
+class AnonymousUser(AnonymousUserMixin):
+    """ AnonymousUser definition
+    """
+    def __init__(self):
+        self.id = None
+        self.first_name = None
+        self.last_name = None
+        self.email = None
+        self.username = None
+        self.admin = False
+
+
 class AdminOnlyMixin(object):
-    ''' For overriding admin-only views.
-    '''
+    """ For overriding admin-only views.
+    """
     def is_accessible(self):
         return current_user.is_authenticated() and current_user.is_admin()
         
-    def _handle_view(self, name, **kwargs):
-        if not self.is_accessible():
-            if current_user.is_authenticated():
-                flash('Access Denied', 'error')
-                return redirect(url_for('admin.index'))
-            else:
-                flash('Please log in to access this page.', 'error')
-                return redirect(url_for('login.index', next=request.url))
+        def _handle_view(self, name, **kwargs):
+            if not self.is_accessible():
+                if current_user.is_authenticated():
+                    flash('Access Denied', 'error')
+                    return redirect(url_for('admin.index'))
+                else:
+                    flash('Please log in to access this page.', 'error')
+                    return redirect(url_for('login.index', next=request.url))
 
 
 class BadgeUpdateException(Exception):
-    ''' Custom exception class for when change_badge_status fails
-    '''
+    """ Custom exception class for when change_badge_status fails
+    """
     pass
 
 
 def change_badge_status(status=None, whmcs_user_id=None, badge=None):
-    ''' Makes an API call to the web service attached to the access controller.
-    '''
+    """ Makes an API call to the web service attached to the access controller.
+    """
     api_url = app.config['API_URL']
     
     # determine add or remove based on status_map
@@ -109,8 +121,8 @@ def change_badge_status(status=None, whmcs_user_id=None, badge=None):
         return dict(error=", ".join(errors))
 
 def verify_waiver_signed(firstname=None, lastname=None, email=None):
-    ''' Make API call to Smartwaiver and see if we have a waiver on file
-    '''
+    """ Make API call to Smartwaiver and see if we have a waiver on file
+    """
     
     # Unfortunately Smartwaiver doesn't allow querying by email for firstname too
     xml_response = urllib2.urlopen(
@@ -162,13 +174,13 @@ def send_email(subject, message, user, email_admins=True):
     '''
     html = html_template % (subject, message)
 
-    # send e-mail to admins, and badge owner
-    if current_user.email == user.email:
-        # prevent duplicate emails if owner is activator
+    # prevent duplicate emails if owner is activator
+    if (current_user.email == user.email):
         email_addresses = []
     else:
         email_addresses = [{'email': user.email}]
         
+    # don't sent email to admins unless it's a pending request
     if email_admins:
         email_addresses = email_addresses + [{'email': app.config['ADMIN_EMAIL']}]
                            

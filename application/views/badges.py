@@ -228,7 +228,7 @@ class BadgeAdmin(AdminOnlyMixin, ModelView):
             * NOT the requestor's own badge and is NOT an admin
             """
             
-            if ((current_user.is_admin() or (current_user.email == email))):
+            if ((current_user.is_admin() or (current_user.email == user.email))):
                 model.status = "Active"
                 result = change_badge_status(model.status, user.id, model.badge)
                 
@@ -244,7 +244,7 @@ class BadgeAdmin(AdminOnlyMixin, ModelView):
                     <p>%s's badge has been submitted by %s %s for activation.</p>
                     <p>This user has already signed a waiver.</p>
                     <a href='%s'>Approve</a>
-                ''' % (user.full_name, current_user.firstname, current_user.lastname,
+                ''' % (user.full_name, current_user.first_name, current_user.last_name,
                        url_for('badges.index_view', flt0_status_equals='Pending', _external=True))
                 subject = 'Badge Pending - Already Signed Waiver'
                 send_email(subject, message, user)
