@@ -64,19 +64,19 @@ def change_badge_status(status=None, whmcs_user_id=None, badge=None):
     if not user:
         return dict(error="Could not find that User ID in WHMCS.")
     
+    # do not allow badge activation if too many badges are already active
+    if ((user.deactivated_badges > user.active_products_and_addons) and (status == "Active")):
+        return dict(error="User has too many deactivated badges. "
+                          "Some of the badges need to be marked as 'Lost'.")
     
+    # Send activation/deactivation request to a webservice:
+    # https://raw.githubusercontent.com/pawl/Chinese-RFID-Access-Control-Library/master/examples/webserver.py
     responses = []
     if badge:
+        # single badge update
         responses.append(urllib2.urlopen(api_url + add_or_remove + '&badge=' + str(badge)))
-    # check if user has more deactivated badges than active products
-    elif (not badge and (user.deactivated_badges > user.active_products_and_addons) and (status == "Active")):
-        return dict(error="User has too many deactivated badges. "
-                          "Manual intervention required. "
-                          "Some of the badges need to be marked as 'Lost'.")
     else:
-        # no badge parameter, and does not require manual intervention
-        # request is sent to this webservice hosted at DMS:
-        # https://raw.githubusercontent.com/pawl/Chinese-RFID-Access-Control-Library/master/examples/webserver.py
+        # find all of the user's badges and reactivate them
         badges = Badges.query.filter(db.and_(Badges.whmcs_user_id == whmcs_user_id,
                                              Badges.status == "Deactivated")).all()
         if badges:
