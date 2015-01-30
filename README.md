@@ -94,7 +94,7 @@ function deactivate_badge($vars) {
 	        $apiKey . '&whmcs_user_id=' . $userid;
 	$response = curlCall($url);
 	logActivity("WHMCS User ID: " . $userid . ", Response: " . $response);
-	if ((strpos($response,'Successfully') == false) or (strpos($response,'No badges found')) {
+	if ((strpos($response,'Successfully') == false) or (strpos($response,'No badges found'))) {
 		$message = 'Unable to remove user ' . $userid . ' from access control due to an error:\r\n' . $response;
 		mail('admin@dallasmakerspace.org', 'WHMCS - MakerManager Remove User Failed', $message);
 	}
