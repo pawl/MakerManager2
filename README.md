@@ -7,7 +7,7 @@ An overhaul of the original MakerManager, written in Python: https://github.com/
 ![Alt text](https://github.com/pawl/MakerManager2/blob/master/screenshots/makermanager.png "Manage Badges Page")
 
 "Request Badge" page:
-![Alt text](https://github.com/pawl/MakerManager2/blob/master/screenshots/makermanager.png "Manage Badges Page")
+![Alt text](https://github.com/pawl/MakerManager2/blob/master/screenshots/badge_request.png "Manage Badges Page")
 
 Improvements over MakerManager 1.0:
 * Integration with Smartwaiver. If an admin or badge owner requests a badge and the person has signed a waiver - it will be activated automatically.
