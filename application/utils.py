@@ -60,7 +60,6 @@ def change_badge_status(status=None, badge_record=None):
         return dict(error="Status required. Must be: " + ", ".join(status_map.keys()))
     
     # do not allow badge activation if too many badges are already active
-    print user.deactivated_badges, user.active_products_and_addons
     if ((status == "Active") and (user.active_badges > 
                                   user.active_products_and_addons)):
         return dict(error="User has only paid for %s." % 
