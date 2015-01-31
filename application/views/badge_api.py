@@ -13,11 +13,9 @@ class BadgeAPI(AdminOnlyMixin, BaseView):
     def is_accessible(self):
         # bypass login if user has a valid API key
         api_key = request.args.get('apiKey')
-        if api_key and (api_key == app.config['BADGE_API_KEY']):
-            return True
-        elif api_key and (api_key != app.config['BADGE_API_KEY']):
-            # TODO: Prevent brute force. Lock out IP?
-            return False
+        if api_key and (request.remote_addr in app.config['IP_WHITELIST']):
+            if (api_key == app.config['BADGE_API_KEY']):
+                return True
         return current_user.is_authenticated() and current_user.is_admin()
         
     def is_visible(self):

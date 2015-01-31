@@ -23,6 +23,7 @@ SMARTWAIVER_KEY = 'secret'
 
 MANDRILL_API_KEY = 'secret'
 
+IP_WHITELIST = ['1.1.1.1', 'localhost']
 
 ### for _external url_for in emails
 SERVER_URL = 'www.yourdomain.com/makermanager/'
