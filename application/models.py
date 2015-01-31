@@ -56,7 +56,7 @@ class User(UserMixin):
             # determine if username is in admin group
             username = unicode(r[0][1]['uid'][0])
             admins = ld.search_s(app.config['DC_STRING'], ldap.SCOPE_SUBTREE, 'cn=admins', ['memberUid'])
-            admin_status = (username in admins[0][1]['memberUid'])
+            admin_status = (username.lower() in admins[0][1]['memberUid'].lower())
 
             return {
                 'first_name': r[0][1]['cn'][0],
