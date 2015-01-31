@@ -56,7 +56,8 @@ class User(UserMixin):
             # determine if username is in admin group
             username = unicode(r[0][1]['uid'][0])
             admins = ld.search_s(app.config['DC_STRING'], ldap.SCOPE_SUBTREE, 'cn=admins', ['memberUid'])
-            admin_status = (username.lower() in admins[0][1]['memberUid'].lower())
+            admin_status = any([True for admin in admins[0][1]['memberUid']
+                                if (username.lower() == admin.lower())])
 
             return {
                 'first_name': r[0][1]['cn'][0],
@@ -142,7 +143,7 @@ class WHMCSclients(db.Model):
     def active_badges(cls):
         return db.select([
                     db.func.count(Badges.id),
-					Badges.status=='Active'
+                    Badges.status=='Active'
                 ]).as_scalar()
                 
     @hybrid_property
@@ -153,7 +154,7 @@ class WHMCSclients(db.Model):
     def deactivated_badges(cls):
         return db.select([
                     db.func.count(Badges.id),
-					Badges.status=='Deactivated'
+                    Badges.status=='Deactivated'
                 ]).as_scalar()
                 
     @hybrid_property
