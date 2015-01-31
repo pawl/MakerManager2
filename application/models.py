@@ -141,18 +141,20 @@ class WHMCSclients(db.Model):
     @active_badges.expression
     def active_badges(cls):
         return db.select([
-                    db.func.count(Badges.id)
-                ]).where(Badges.status=='Active').as_scalar()
+                    db.func.count(Badges.id),
+					Badges.status=='Active'
+                ]).as_scalar()
                 
     @hybrid_property
     def deactivated_badges(self):
         return len([badge for badge in self.badges if badge.status == "Deactivated"])
         
-    @active_badges.expression
+    @deactivated_badges.expression
     def deactivated_badges(cls):
         return db.select([
-                    db.func.count(Badges.id)
-                ]).where(Badges.status=='Deactivated').as_scalar()
+                    db.func.count(Badges.id),
+					Badges.status=='Deactivated'
+                ]).as_scalar()
                 
     @hybrid_property
     def active_products_and_addons(self):
