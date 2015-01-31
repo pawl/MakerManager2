@@ -44,6 +44,8 @@ admin.add_view(BadgesHistoryAdmin(BadgesHistory, db.session, name='Badge Activit
 
 admin.add_view(BadgeAPI('Badge API', endpoint='badgeapi'))
 
+admin.add_view(BadgeRequest('Badge Request', endpoint='badge_request'))
+
 admin.add_view(Login('Login', endpoint='login'))
 admin.add_view(Logout('Logout', endpoint='logout'))
 
@@ -54,6 +56,3 @@ admin.add_link(AdminMenuLink(name='Deactivated Badges',
                              url='/makermanager/badges/?flt0_status_equals=Deactivated', category="Manage Badges"))
 admin.add_link(AdminMenuLink(name='Pending Badges',
                              url='/makermanager/badges/?flt0_status_equals=Pending', category="Manage Badges"))
-
-# menu links - everyone else
-admin.add_link(AuthenticatedMenuLink(name='Badge Request', endpoint='badges.create_view'))

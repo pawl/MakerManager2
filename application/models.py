@@ -78,6 +78,11 @@ class Badges(db.Model):
     whmcs_user_id = db.Column(db.Integer, db.ForeignKey('dms-whmcs.tblclients.id'))
     badge = db.Column(db.Integer)
     status = db.Column(db.String(16))
+    
+    def __init__(self, whmcs_user_id=None, badge=None, status=None):
+        self.whmcs_user_id = whmcs_user_id
+        self.badge = badge
+        self.status = status
         
     def __str__(self):
         return self.badge

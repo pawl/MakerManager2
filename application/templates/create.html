@@ -27,8 +27,8 @@
         <div class="panel-body" >
             <form action="" method="POST" role="form" enctype="multipart/form-data">
                 <div class="form-group">
-                    <label for="tblclients">Member Name</label>
-                    {{ form.tblclients(class="form-control") }}
+                    <label for="member">Member Name</label>
+                    {{ form.member(**{'class': "form-control", 'data-allow-blank': "1", 'data-role': "select2"}) }}
                     <p class="help-block">Note: The drop-down only shows paid members without an active badge.</p>
                 </div>
                 

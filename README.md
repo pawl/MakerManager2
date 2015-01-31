@@ -35,7 +35,6 @@ Improvements over MakerManager 1.0
 TODO
 ---
 * Write code for creating a test database and a few simple unit tests
-* MenuLink items not showing as active when they are selected.
 * Simplify the query in _get_filtered_list by using the ORM.
 * Add filtering to "Total Products + Addons" and "Active Badges" on admin view.
 * Allow deleting pending badges.
