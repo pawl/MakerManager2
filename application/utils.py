@@ -65,7 +65,7 @@ def change_badge_status(status=None, whmcs_user_id=None, badge=None):
         return dict(error="Could not find that User ID in WHMCS.")
     
     # do not allow badge activation if too many badges are already active
-    if ((user.deactivated_badges > user.active_products_and_addons) and (status == "Active")):
+    if ((status == "Active") and (user.deactivated_badges > user.active_products_and_addons)):
         return dict(error="User has too many deactivated badges. "
                           "Some of the badges need to be marked as 'Lost'.")
     
@@ -76,9 +76,15 @@ def change_badge_status(status=None, whmcs_user_id=None, badge=None):
         # single badge update
         responses.append(urllib2.urlopen(api_url + add_or_remove + '&badge=' + str(badge)))
     else:
-        # find all of the user's badges and reactivate them
-        badges = Badges.query.filter(db.and_(Badges.whmcs_user_id == whmcs_user_id,
-                                             Badges.status == "Deactivated")).all()
+        # find all of the user's badges
+        # TODO: change status in database
+        if (status == "Active"):
+            badges = Badges.query.filter(db.and_(Badges.whmcs_user_id == whmcs_user_id,
+                                                 Badges.status == "Deactivated")).all()
+        elif (status == "Deactivated"):
+            badges = Badges.query.filter(db.and_(Badges.whmcs_user_id == whmcs_user_id,
+                                                 Badges.status == "Active")).all()
+                                                 
         if badges:
             for record in badges:
                 responses.append(urllib2.urlopen(api_url + add_or_remove + '&badge=%s' % record.badge))
