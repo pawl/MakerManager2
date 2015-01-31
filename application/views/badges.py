@@ -188,8 +188,7 @@ class BadgeAdmin(AdminOnlyMixin, ModelView):
             form.populate_obj(model)
             
             # Begin override update_model behavior
-            #if model.status == "Delete":
-            result = change_badge_status(model.status, model.tblclients.id, model.badge)
+            result = change_badge_status(model.status, model)
             if "error" in result:
                 raise BadgeUpdateException("%s" % (result['error']))
             # End custom override code
@@ -198,8 +197,8 @@ class BadgeAdmin(AdminOnlyMixin, ModelView):
             self.session.commit()
         except Exception as ex:
             if (not self.handle_view_exception(ex)) or isinstance(ex, BadgeUpdateException):
-                flash('Failed to update badge status. %s' % (str(ex)), 'error')
-                logging.exception('Failed to update badge status.')
+                flash(str(ex), 'error')
+                logging.exception('Failed to update badge status: %s' % (str(ex),))
 
             self.session.rollback()
 
@@ -230,7 +229,7 @@ class BadgeAdmin(AdminOnlyMixin, ModelView):
             
             if ((current_user.is_admin() or (current_user.email == user.email))):
                 model.status = "Active"
-                result = change_badge_status(model.status, user.id, model.badge)
+                result = change_badge_status(model.status, model)
                 
                 if "error" in result:
                     raise BadgeUpdateException("%s" % (result['error']))

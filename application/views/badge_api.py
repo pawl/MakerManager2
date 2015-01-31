@@ -1,5 +1,6 @@
-from application import app
+from application import app, db
 from application.utils import change_badge_status, AdminOnlyMixin
+from application.models import WHMCSclients
 from flask import redirect, request, jsonify, flash, url_for
 from flask.ext.admin import BaseView, expose
 from flask.ext.login import current_user
@@ -23,7 +24,35 @@ class BadgeAPI(AdminOnlyMixin, BaseView):
             
     @expose('/')
     def index(self):
-        status = request.args.get('status')
+        change_status_to = request.args.get('status')
         whmcs_user_id = request.args.get('whmcs_user_id')
-        badge = request.args.get('badge')
-        return jsonify(**change_badge_status(status, whmcs_user_id, badge))
+        
+        if not (whmcs_user_id and change_status_to):
+            return jsonify(error="Status and whmcs_user_id are required.")
+        
+        user = WHMCSclients.query.get(whmcs_user_id)
+        if not user:
+            return jsonify(error="Could not find that User ID in WHMCS.")
+            
+        if ((change_status_to == "Active") and (user.deactivated_badges > 
+                                                user.active_products_and_addons)):
+            return jsonify(error="User has too many deactivated badges. "
+                                 "Some of the badges need to be marked as 'Lost'.")
+            
+        results = []
+        for badge in user.badges:
+            result = None
+            if change_status_to == "Active":
+                if badge.status == "Deactivated":
+                    result = change_badge_status(change_status_to, badge)
+            else:
+                if badge.status == "Active":
+                    result = change_badge_status(change_status_to, badge)
+                    
+            if result:
+                results.append(result)
+                if "error" not in result:
+                    badge.status = change_status_to
+                    db.session.commit()
+        
+        return jsonify(results=results)

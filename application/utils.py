@@ -43,10 +43,14 @@ class BadgeUpdateException(Exception):
     pass
 
 
-def change_badge_status(status=None, whmcs_user_id=None, badge=None):
+def change_badge_status(status=None, badge_record=None):
     """ Makes an API call to the web service attached to the access controller.
+        
+        Params:
+        `status`: status the badge will be changed tos
+        `badge_record`: row object from the Badges model
     """
-    api_url = app.config['API_URL']
+    user = badge_record.tblclients
     
     # determine add or remove based on status_map
     status_map = {'Active': 'add', 'Deactivated': 'remove', 'Lost': 'remove'}
@@ -55,76 +59,41 @@ def change_badge_status(status=None, whmcs_user_id=None, badge=None):
     except KeyError:
         return dict(error="Status required. Must be: " + ", ".join(status_map.keys()))
     
-    try:
-        float(whmcs_user_id)
-    except ValueError, TypeError:
-        return dict(error="Invalid WHMCS user ID. Must be a number.")
-    
-    user = WHMCSclients.query.get(whmcs_user_id)
-    if not user:
-        return dict(error="Could not find that User ID in WHMCS.")
-    
     # do not allow badge activation if too many badges are already active
-    if ((status == "Active") and (user.deactivated_badges > user.active_products_and_addons)):
-        return dict(error="User has too many deactivated badges. "
-                          "Some of the badges need to be marked as 'Lost'.")
+    print user.deactivated_badges, user.active_products_and_addons
+    if ((status == "Active") and (user.active_badges > 
+                                  user.active_products_and_addons)):
+        return dict(error="User has only paid for %s." % 
+                    (user.active_products_and_addons,))
     
     # Send activation/deactivation request to a webservice:
     # https://raw.githubusercontent.com/pawl/Chinese-RFID-Access-Control-Library/master/examples/webserver.py
-    responses = []
-    if badge:
-        # single badge update
-        responses.append(urllib2.urlopen(api_url + add_or_remove + '&badge=' + str(badge)))
-    else:
-        # find all of the user's badges
-        # TODO: change status in database
-        if (status == "Active"):
-            badges = Badges.query.filter(db.and_(Badges.whmcs_user_id == whmcs_user_id,
-                                                 Badges.status == "Deactivated")).all()
-        else:
-            badges = Badges.query.filter(db.and_(Badges.whmcs_user_id == whmcs_user_id,
-                                                 Badges.status == "Active")).all()
-                                                 
-        if badges:
-            for record in badges:
-                responses.append(urllib2.urlopen(api_url + add_or_remove + '&badge=%s' % record.badge))
-        else:
-            return dict(error="No badges found.")
-        
-    errors = []
-    messages = []
-    for response in responses:
-        html = response.read()
-        if response.getcode() == 200:
-            if html == "User Added Successfully":
-                subject = "DMS Badge Activated"
-                message = "%s's badge has been activated." % (user.full_name,)
-                send_email(subject, message, user, email_admins=False)
-                
-                # record activation in log
-                record = BadgesHistory(whmcs_user_id, current_user.email, str(badge), status, datetime.now())
-                db.session.add(record)
-                db.session.commit()
-                
-                messages.append(html)
-            elif html == "User Removed Successfully":
-                # record deactivation in log
-                record = BadgesHistory(whmcs_user_id, current_user.email, str(badge), status, datetime.now())
-                db.session.add(record)
-                db.session.commit()
-                
-                messages.append(html)
-            else:
-                errors.append("Unexpected Response: %s" % (html,))
-        else:
-            errors.append("Status Code: %s Response" % (response.getcode(),))
+    response = urllib2.urlopen(app.config['API_URL'] + add_or_remove + '&badge=%s' % str(badge_record.badge))
+    html = response.read()
+    if response.getcode() == 200:
+        if html == "User Added Successfully":
+            subject = "DMS Badge Activated"
+            message = "%s's badge has been activated." % (user.full_name,)
+            send_email(subject, message, user, email_admins=False)
             
-    if messages and errors:
-        return dict(message=", ".join(messages), error=", ".join(errors))
-    elif messages and not errors:
-        return dict(message=", ".join(messages))
+            # record activation in log
+            record = BadgesHistory(user.id, current_user.email, badge_record.badge, status, datetime.now())
+            db.session.add(record)
+            db.session.commit()
+            
+            return dict(message=html)
+        elif html == "User Removed Successfully":
+            # record deactivation in log
+            record = BadgesHistory(user.id, current_user.email, badge_record.badge, status, datetime.now())
+            db.session.add(record)
+            db.session.commit()
+            
+            return dict(message=html)
+        else:
+            return dict(error="Unexpected Response: %s" % (html,))
     else:
-        return dict(error=", ".join(errors))
+        return dict(error="Status Code: %s Response" % (response.getcode(),))
+
 
 def verify_waiver_signed(firstname=None, lastname=None, email=None):
     """ Make API call to Smartwaiver and see if we have a waiver on file
