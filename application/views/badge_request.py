@@ -128,7 +128,10 @@ class BadgeRequest(BaseView):
                 
                 if "error" in result:
                     raise Exception("%s" % (result['error']))
-                    
+                
+                record.status = 'Active'
+                db.session.commit()
+                
                 flash("Request Successful: %s's badge has been activated automatically." % (user.full_name,))                
             else:
                 message = '''
