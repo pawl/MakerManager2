@@ -27,14 +27,14 @@ class AdminOnlyMixin(object):
     def is_accessible(self):
         return current_user.is_authenticated() and current_user.is_admin()
         
-        def _handle_view(self, name, **kwargs):
-            if not self.is_accessible():
-                if current_user.is_authenticated():
-                    flash('Access Denied', 'error')
-                    return redirect(url_for('admin.index'))
-                else:
-                    flash('Please log in to access this page.', 'error')
-                    return redirect(url_for('login.index', next=request.url))
+    def _handle_view(self, name, **kwargs):
+        if not self.is_accessible():
+            if current_user.is_authenticated():
+                flash('Access Denied', 'error')
+                return redirect(url_for('admin.index'))
+            else:
+                flash('Please log in to access this page.', 'error')
+                return redirect(url_for('login.index', next=request.url))
 
 
 class BadgeUpdateException(Exception):
