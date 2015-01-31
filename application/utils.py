@@ -81,7 +81,7 @@ def change_badge_status(status=None, whmcs_user_id=None, badge=None):
         if (status == "Active"):
             badges = Badges.query.filter(db.and_(Badges.whmcs_user_id == whmcs_user_id,
                                                  Badges.status == "Deactivated")).all()
-        elif (status == "Deactivated"):
+        else:
             badges = Badges.query.filter(db.and_(Badges.whmcs_user_id == whmcs_user_id,
                                                  Badges.status == "Active")).all()
                                                  
