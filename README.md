@@ -35,8 +35,8 @@ Improvements over MakerManager 1.0
 TODO
 ---
 * Write code for creating a test database and a few simple unit tests
-* Simplify the query in _get_filtered_list by using the ORM.
-* Add filtering to "Total Products + Addons" and "Active Badges" on admin view.
+* Simplify the query in `BadgeRequest` that populates the dropdown - by using the ORM.
+* Add filtering to "Total Products + Addons" and "Active Badges" on admin view. Currently, filtering on a hybrid property is giving me `TypeError: Boolean value of this clause is not defined`.
 * Allow deleting pending badges.
 * Andrew wants to add a quiz for new members. Someone just needs to write the questions to it.
 * Improve feedback for Smartwaiver mismatches (like when the first and last name match but the email doesn't)
