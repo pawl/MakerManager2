@@ -28,7 +28,7 @@
             <form action="" method="POST" role="form" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="member">Member Name</label>
-                    {{ form.member(**{'class': "form-control", 'data-allow-blank': "1", 'data-role': "select2"}) }}
+                    {{ form.member(class="form-control") }}
                     <p class="help-block">Note: The drop-down only shows paid members without an active badge.</p>
                 </div>
                 
@@ -63,7 +63,6 @@
 
 {% block tail %}
     {{ super() }}
-    {{ lib.form_js() }}
     <script>
     $('#sendit').attr('disabled', 'disabled');
     $('.btn-group').mouseup(function() {
