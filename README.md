@@ -62,6 +62,7 @@ BASE_DN = 'ou=people,' + DC_STRING
 * SMARTWAIVER_KEY - An API key for SmartWaiver that can be requested here: https://www.smartwaiver.com/m/user/sw_login.php?wms_login=1&wms_login_redirect=%2Fm%2Frest%2F
 * MANDRILL_API_KEY - Get an API key from the Mandrill settings page, also follow their instructions to set the appropriate DNS settings on your domain. This is required to send email.
 * SERVER_URL - The URL for the site, required for sending e-mail with links back to MakerManager.
+* IP_WHITELIST - A list of IP addresses allowed to use the API.
 
 Usage
 ---
