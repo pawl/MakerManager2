@@ -148,16 +148,12 @@ def send_email(subject, message, user, email_admins=True):
     '''
     html = html_template % (subject, message)
 
-    # prevent duplicate emails if owner is activator
-    if (current_user.email == user.email):
-        email_addresses = []
+    # only send email to admins if it's a pending request
+    if email_admins:
+        email_addresses = [{'email': app.config['ADMIN_EMAIL']}]
     else:
         email_addresses = [{'email': user.email}]
         
-    # don't sent email to admins unless it's a pending request
-    if email_admins:
-        email_addresses = email_addresses + [{'email': app.config['ADMIN_EMAIL']}]
-                           
     if email_addresses:
         mandrill.send_email(
             from_email=app.config['ADMIN_EMAIL'],
