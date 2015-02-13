@@ -34,6 +34,8 @@ Improvements over MakerManager 1.0
 
 TODO
 ---
+* Prevent duplicate pending badges from being submitted for the same person.
+* Catch "no route to host" error when the webservice is down. 
 * Write code for creating a test database and a few simple unit tests
 * Simplify the query in `BadgeRequest` that populates the dropdown - by using the ORM.
 * Add filtering to "Total Products + Addons" and "Active Badges" on admin view. Currently, filtering on a hybrid property is giving me `TypeError: Boolean value of this clause is not defined`.
