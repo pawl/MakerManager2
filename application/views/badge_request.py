@@ -7,7 +7,7 @@ from flask.ext.login import current_user
 from wtforms import Form
 from wtforms.fields import IntegerField
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
-from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from wtforms.validators import ValidationError, DataRequired, InputRequired
 from application.utils import (verify_waiver_signed, change_badge_status,
                                send_email)
@@ -24,12 +24,21 @@ def rfid_validator(form, field):
             
         # check if badge is already active
         try:
-            obj = (Badges.query.filter(db.and_(Badges.badge == field.data, 
+            obj = (Badges.query.filter(db.and_(Badges.badge == form.badge.data, 
                                                Badges.status == "Active")).one())
-            if not hasattr(form, '_obj') or not form._obj == obj:
-                raise ValidationError('That badge is already active.')
+            raise ValidationError('That badge is already active.')
         except NoResultFound:
             pass
+            
+        # check if badge is already active
+        try:
+            obj = (Badges.query.filter(db.and_(Badges.badge == form.badge.data, 
+                                               Badges.whmcs_user_id == form.member.data.id)).one())
+            raise ValidationError('That badge already belongs to that user.')
+        except NoResultFound:
+            pass
+        except MultipleResultsFound:
+            raise ValidationError('That badge already belongs to that user.')
 
 
 def waiver_validator(form, field):
