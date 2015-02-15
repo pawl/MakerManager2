@@ -148,16 +148,17 @@ def send_email(subject, message, user, email_admins=True):
     '''
     html = html_template % (subject, message)
 
-    # only send email to admins if it's a pending request
-    if email_admins:
-        email_addresses = [{'email': app.config['ADMIN_EMAIL']}]
-    else:
-        email_addresses = [{'email': user.email}]
-        
-    if email_addresses:
-        mandrill.send_email(
-            from_email=app.config['ADMIN_EMAIL'],
-            subject=subject,
-            to=email_addresses,
-            html=html
-        )
+    if not app.config.get('TESTING'):
+        # only send email to admins if it's a pending request
+        if email_admins:
+            email_addresses = [{'email': app.config['ADMIN_EMAIL']}]
+        else:
+            email_addresses = [{'email': user.email}]
+            
+        if email_addresses:
+            mandrill.send_email(
+                from_email=app.config['ADMIN_EMAIL'],
+                subject=subject,
+                to=email_addresses,
+                html=html
+            )

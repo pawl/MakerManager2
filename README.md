@@ -34,7 +34,7 @@ Improvements over MakerManager 1.0
 
 TODO
 ---
-* Prevent duplicate pending badges from being submitted for the same person.
+* Add CSRF protection
 * Catch "no route to host" error when the webservice is down. 
 * Write code for creating a test database and a few simple unit tests
 * Simplify the query in `BadgeRequest` that populates the dropdown - by using the ORM.
@@ -47,7 +47,7 @@ Setup
 ---
 First, activate your virtualenv and install the requirements by running: `pip install -r requirements.txt`
 
-Copy `example_settings.py` to `default_settings.py` and modify the following:
+Copy `example_config.py` to `config.py` and modify the following:
 * SECRET_KEY - Generate this by running the python shell and typing: import os; os.urandom(24)
 * SQLALCHEMY_DATABASE_URI - https://pythonhosted.org/Flask-SQLAlchemy/config.html#configuration-keys
 * LDAP settings (these probably going to be very unique for each user):
