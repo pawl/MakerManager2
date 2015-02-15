@@ -2,7 +2,7 @@
 
 .DS_Store
 *.db
-application/default_settings.py
+application/config.py
 application/production.py
 
 ### Python ###
