@@ -5,8 +5,7 @@ from flask.ext.admin import Admin
 from flask.ext.mandrill import Mandrill
 
 app = Flask(__name__, static_url_path='/assets')
-app.config.from_object('application.default_settings')
-app.config.from_envvar('PRODUCTION_SETTINGS', silent=True)
+app.config.from_object('application.config')
 
 if not app.debug:
 	import logging
@@ -51,8 +50,8 @@ admin.add_view(Logout('Logout', endpoint='logout'))
 
 # menu links - admin only
 admin.add_link(AdminMenuLink(name='Active Badges',
-                             url='/makermanager/badges/?flt0_status_equals=Active', category="Manage Badges"))
+                             url=app.config['SERVER_URL'] + 'badges/?flt0_status_equals=Active', category="Manage Badges"))
 admin.add_link(AdminMenuLink(name='Deactivated Badges',
-                             url='/makermanager/badges/?flt0_status_equals=Deactivated', category="Manage Badges"))
+                             url=app.config['SERVER_URL'] + 'badges/?flt0_status_equals=Deactivated', category="Manage Badges"))
 admin.add_link(AdminMenuLink(name='Pending Badges',
-                             url='/makermanager/badges/?flt0_status_equals=Pending', category="Manage Badges"))
+                             url=app.config['SERVER_URL'] + 'badges/?flt0_status_equals=Pending', category="Manage Badges"))

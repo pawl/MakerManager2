@@ -16,17 +16,30 @@ class User(UserMixin):
         self.active = False
         self.admin = False
         
-        ldap_result = self.ldap_fetch(uid=uid, username=username, password=password)
-        
-        if ldap_result is not None:
-            self.first_name = ldap_result['first_name']
-            self.last_name = ldap_result['last_name']
-            self.email = ldap_result['email']
-            self.id = ldap_result['id']
-            self.username = ldap_result['username']
-            self.admin = ldap_result['admin']
+        # Bypass login for testing
+        if app.config.get('TESTING'):
+            self.first_name = 'test_firstname'
+            self.last_name = 'test_lastname'
+            self.email = 'test@test.com'
+            self.id = 1
+            self.username = 'test_username'
+            self.admin = True
             
             self.active = True
+        else:
+            ldap_result = self.ldap_fetch(uid=uid,
+                                          username=username,
+                                          password=password)
+            
+            if ldap_result is not None:
+                self.first_name = ldap_result['first_name']
+                self.last_name = ldap_result['last_name']
+                self.email = ldap_result['email']
+                self.id = ldap_result['id']
+                self.username = ldap_result['username']
+                self.admin = ldap_result['admin']
+                
+                self.active = True
             
     def is_active(self):
         return self.active
@@ -72,6 +85,11 @@ class User(UserMixin):
 
 
 class Badges(db.Model):
+    def __init__(self, whmcs_user_id=None, badge=None, status=None):
+        self.whmcs_user_id = whmcs_user_id
+        self.badge = badge
+        self.status = status
+    
     __tablename__ = 'tbl_badges'
     
     id = db.Column(db.Integer, primary_key=True)
@@ -79,19 +97,22 @@ class Badges(db.Model):
     badge = db.Column(db.Integer)
     status = db.Column(db.String(16))
     
-    def __init__(self, whmcs_user_id=None, badge=None, status=None):
-        self.whmcs_user_id = whmcs_user_id
-        self.badge = badge
-        self.status = status
-        
     def __str__(self):
         return self.badge
         
     def __unicode__(self):
         return self.badge
-        
+
 
 class BadgesHistory(db.Model):
+    def __init__(self, whmcs_user_id=None, changed_by=None, badge=None,
+                 changed_to=None, change_date=None):
+        self.whmcs_user_id = whmcs_user_id
+        self.changed_by = changed_by
+        self.badge = badge
+        self.changed_to = changed_to
+        self.change_date = change_date
+    
     __tablename__ = 'tbl_badges_history'
     
     id = db.Column(db.Integer, primary_key=True)
@@ -100,14 +121,6 @@ class BadgesHistory(db.Model):
     badge = db.Column(db.Integer)
     changed_to = db.Column(db.String(16))
     change_date = db.Column(db.DateTime)
-    
-    def __init__(self, whmcs_user_id=None, changed_by=None, badge=None,
-                 changed_to=None, change_date=None):
-        self.whmcs_user_id = whmcs_user_id
-        self.changed_by = changed_by
-        self.badge = badge
-        self.changed_to = changed_to
-        self.change_date = change_date
     
     def __str__(self):
         return self.badge
@@ -120,16 +133,23 @@ class WHMCSclients(db.Model):
     ''' Table inside WHMCS Database (the billing system)
         This table contains a list of all users in the billing system.
     '''
+    
+    def __init__(self, firstname=None, lastname=None, email=None):
+        self.firstname = firstname
+        self.lastname = lastname
+        self.email = email
+        
     __tablename__ = u'tblclients'
     __table_args__ = (
-        db.Index(u'firstname_lastname', u'firstname', u'lastname'),
+        db.Index(u'firstname_lastname', u'firstname', u'lastname', mysql_length=10),
+        db.Index(u'email_index', u'email', mysql_length=10),
         {'schema': 'dms-whmcs'}
     )
 
     id = db.Column(db.Integer, primary_key=True)
     firstname = db.Column(db.Text, nullable=False)
     lastname = db.Column(db.Text, nullable=False)
-    email = db.Column(db.Text, nullable=False, index=True)
+    email = db.Column(db.Text, nullable=False)
     
     badges = db.relationship('Badges', backref='tblclients')
     badges_history = db.relationship('BadgesHistory', backref='tblclients')
@@ -211,17 +231,23 @@ class WHMCSclients(db.Model):
     def __unicode__(self):
         return self.firstname + ' ' + self.lastname + ' - ' + self.email
 
+
 class WHMCSproducts(db.Model):
     ''' Table inside WHMCS Database (the billing system)
         This table contains a list of all regular memberships, but not all family members.
     '''
+    
+    def __init__(self, userid=None, nextduedate=None, domainstatus=None):
+        self.userid = userid
+        self.nextduedate = nextduedate
+        self.domainstatus = domainstatus
+        
     __tablename__ = u'tblhosting'
     __table_args__ = {'schema': 'dms-whmcs'}
 
     id = db.Column(db.Integer, primary_key=True, index=True)
-    userid = db.Column(db.Integer, db.ForeignKey('tbl_badges.whmcs_user_id'),
-                       db.ForeignKey('dms-whmcs.tblclients.id'), nullable=False,
-                       index=True)
+    userid = db.Column(db.Integer, db.ForeignKey('dms-whmcs.tblclients.id'),
+                       nullable=False, index=True)
     nextduedate = db.Column(db.Date)
     domainstatus = db.Column(db.Enum(u'Pending', u'Active', u'Suspended', u'Terminated', u'Cancelled', u'Fraud'), nullable=False, index=True)
     
@@ -232,6 +258,12 @@ class WHMCSaddons(db.Model):
     ''' Table inside WHMCS Database (the billing system)
         Contains a list of family memberships.
     '''
+    
+    def __init__(self, hostingid=None, status=None, nextduedate=None):
+        self.hostingid = hostingid
+        self.status = status
+        self.nextduedate = nextduedate
+        
     __tablename__ = u'tblhostingaddons'
     __table_args__ = {'schema': 'dms-whmcs'}
 
