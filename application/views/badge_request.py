@@ -30,7 +30,7 @@ def rfid_validator(form, field):
         except NoResultFound:
             pass
             
-        # check if badge is already active
+        # check if user already has that badge
         try:
             obj = (Badges.query.filter(db.and_(Badges.badge == form.badge.data, 
                                                Badges.whmcs_user_id == form.member.data.id)).one())
