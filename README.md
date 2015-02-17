@@ -2,7 +2,7 @@ MakerManager2
 ---
 Provides a web interface and automation for Dallas Makerspace's access control system.
 
-An overhaul of the original MakerManager, written in Python: https://github.com/pawl/MakerManager
+A python overhaul of the original MakerManager (written in PHP): https://github.com/pawl/MakerManager
 
 Main Features
 ---
