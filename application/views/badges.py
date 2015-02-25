@@ -53,7 +53,8 @@ class BadgeAdmin(AdminOnlyMixin, ModelView):
     column_searchable_list = [
         'tblclients.firstname', 
         'tblclients.lastname',
-        'tblclients.email'
+        'tblclients.email',
+        'badge'
     ]
     column_list = [
         'tblclients.full_name',
