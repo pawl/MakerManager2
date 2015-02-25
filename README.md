@@ -2,7 +2,7 @@ MakerManager2
 ---
 Provides a web interface and automation for Dallas Makerspace's access control system.
 
-An overhaul of the original MakerManager, written in Python: https://github.com/pawl/MakerManager
+A python overhaul of the original MakerManager (written in PHP): https://github.com/pawl/MakerManager
 
 Main Features
 ---
@@ -36,7 +36,7 @@ TODO
 ---
 * Add CSRF protection
 * Catch "no route to host" error when the webservice is down. 
-* Write code for creating a test database and a few simple unit tests
+* More unit tests.
 * Simplify the query in `BadgeRequest` that populates the dropdown - by using the ORM.
 * Add filtering to "Total Products + Addons" and "Active Badges" on admin view. Currently, filtering on a hybrid property is giving me `TypeError: Boolean value of this clause is not defined`.
 * Allow deleting pending badges.

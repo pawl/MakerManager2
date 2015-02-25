@@ -19,8 +19,10 @@ def rfid_validator(form, field):
             number = float(form.badge.data)
         except ValueError:
             raise ValidationError('Not a valid badge number.')
+            
+        # https://github.com/pawl/Chinese-RFID-Access-Control-Library#rfid-card-number-explanation
         if number > 16777215:
-            raise ValidationError('Not a valid badge number. Must be < 16777215.')
+            raise ValidationError('Not a valid badge number. Must not be greater than 16,777,215.')
             
         # check if badge is already active
         try:
@@ -30,7 +32,7 @@ def rfid_validator(form, field):
         except NoResultFound:
             pass
             
-        # check if badge is already active
+        # check if user already has that badge
         try:
             obj = (Badges.query.filter(db.and_(Badges.badge == form.badge.data, 
                                                Badges.whmcs_user_id == form.member.data.id)).one())
