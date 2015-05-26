@@ -1,5 +1,6 @@
 import ldap
 import urllib2
+import urllib
 
 from flask import flash, url_for, redirect, request
 from application import app, mandrill, db
@@ -102,7 +103,7 @@ def verify_waiver_signed(firstname=None, lastname=None, email=None):
     xml_response = urllib2.urlopen(
         'https://www.smartwaiver.com/api/v3/?rest_request=%s&'
         'rest_request_lastname=%s&' % (
-            app.config['SMARTWAIVER_KEY'], lastname
+            app.config['SMARTWAIVER_KEY'], urllib.quote_plus(lastname)
         )
     )
     soup = BeautifulSoup(xml_response.read())
