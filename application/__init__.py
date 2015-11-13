@@ -1,4 +1,4 @@
-from flask import Flask, render_template, session, url_for
+from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import LoginManager
 from flask.ext.admin import Admin
@@ -8,15 +8,15 @@ app = Flask(__name__, static_url_path='/assets')
 app.config.from_object('application.config')
 
 if not app.debug:
-	import logging
-	app.logger.addHandler(logging.StreamHandler())
-	app.logger.setLevel(logging.INFO)
-    
+    import logging
+    app.logger.addHandler(logging.StreamHandler())
+    app.logger.setLevel(logging.INFO)
+
 db = SQLAlchemy(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
-login_manager.login_view = 'login.index' # for @login_required
+login_manager.login_view = 'login.index'  # for @login_required
 
 # for sending e-mail through mandrillapp.com
 mandrill = Mandrill(app)
@@ -30,16 +30,19 @@ login_manager.anonymous_user = AnonymousUser
 from application.views import *
 from application.hooks import *
 
-admin = Admin(app, name='Maker Manager 2', index_view=HomeView(name="Home", url='/'),
+admin = Admin(app, name='Maker Manager 2',
+              index_view=HomeView(name="Home", url='/'),
               base_template='base.html', template_mode="bootstrap3")
 
 admin.add_view(BillingRedirect('Billing Account', endpoint='billing'))
 
-admin.add_view(BadgeAdmin(Badges, db.session, name='All Badges', endpoint='badges',
-                          category="Manage Badges"))
+admin.add_view(BadgeAdmin(Badges, db.session, name='All Badges',
+                          endpoint='badges', category="Manage Badges"))
 
-admin.add_view(BadgesHistoryAdmin(BadgesHistory, db.session, name='Badge Activity Log',
-                                  endpoint='badgehistory', category="Manage Badges"))
+admin.add_view(BadgesHistoryAdmin(BadgesHistory, db.session,
+                                  name='Badge Activity Log',
+                                  endpoint='badgehistory',
+                                  category="Manage Badges"))
 
 admin.add_view(BadgeAPI('Badge API', endpoint='badgeapi'))
 

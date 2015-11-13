@@ -19,22 +19,23 @@ def rfid_validator(form, field):
             number = float(form.badge.data)
         except ValueError:
             raise ValidationError('Not a valid badge number.')
-            
+
         # https://github.com/pawl/Chinese-RFID-Access-Control-Library#rfid-card-number-explanation
         if number > 16777215:
-            raise ValidationError('Not a valid badge number. Must not be greater than 16,777,215.')
-            
+            raise ValidationError('Not a valid badge number.'
+                                  'Must not be greater than 16,777,215.')
+
         # check if badge is already active
         try:
-            obj = (Badges.query.filter(db.and_(Badges.badge == form.badge.data, 
+            obj = (Badges.query.filter(db.and_(Badges.badge == form.badge.data,
                                                Badges.status == "Active")).one())
             raise ValidationError('That badge is already active.')
         except NoResultFound:
             pass
-            
+
         # check if user already has that badge
         try:
-            obj = (Badges.query.filter(db.and_(Badges.badge == form.badge.data, 
+            obj = (Badges.query.filter(db.and_(Badges.badge == form.badge.data,
                                                Badges.whmcs_user_id == form.member.data.id)).one())
             raise ValidationError('That badge already belongs to that user.')
         except NoResultFound:
@@ -47,8 +48,10 @@ def waiver_validator(form, field):
     if form.member.data:
         user = form.member.data
         if not verify_waiver_signed(user.firstname, user.lastname, user.email):
-            raise ValidationError('A signed liability waiver could not be found for this member. '
-                                  'Please use the kiosk near the entrance of the Makerspace.')
+            raise ValidationError(
+              'A signed liability waiver could not be found for this member. '
+              'Please use the kiosk near the entrance of the Makerspace.'
+            )
 
 
 def get_users_without_badges():
@@ -59,8 +62,8 @@ def get_users_without_badges():
     FROM (
       SELECT
         distinct `dms-whmcs`.tblclients.id as whmcs_user_id,
-        IF(((IFNULL(active_badge_count,0) >= (IFNULL(s.addon_count,0) + IFNULL(m.product_count,0))) 
-            AND 
+        IF(((IFNULL(active_badge_count,0) >= (IFNULL(s.addon_count,0) + IFNULL(m.product_count,0)))
+            AND
             ((IFNULL(s.addon_count,0) + IFNULL(m.product_count,0)) >= 0)),
             "Hit Limit", "Under Limit") as limit_status,
         (IFNULL(s.addon_count,0) + IFNULL(m.product_count,0)) as active_products
@@ -73,9 +76,9 @@ def get_users_without_badges():
         group by whmcs_user_id
       ) badges ON `dms-whmcs`.tblclients.id = badges.whmcs_user_id
       left join (
-        select 
+        select
           id,
-          userid, 
+          userid,
           count(*) as product_count
         from `dms-whmcs`.tblhosting
         where (tblhosting.domainstatus = "Active") OR (tblhosting.nextduedate > CURDATE())
@@ -83,9 +86,9 @@ def get_users_without_badges():
       ) m ON m.userid = `dms-whmcs`.tblclients.id
       left join (
         select
-          hostingid, 
+          hostingid,
           count(*) as addon_count
-        from `dms-whmcs`.tblhostingaddons 
+        from `dms-whmcs`.tblhostingaddons
         where (tblhostingaddons.status = "Active") OR (tblhostingaddons.nextduedate > CURDATE())
         group by hostingid
       ) s ON s.hostingid = m.id
@@ -98,52 +101,52 @@ def get_users_without_badges():
 
 class BadgeRequestForm(Form):
     member = QuerySelectField(query_factory=get_users_without_badges,
-                                  get_pk=lambda a: a.id,
-                                  allow_blank=True,
-                                  blank_text='',
-                                  validators=[DataRequired(), waiver_validator])
-    badge = IntegerField(u'Badge', validators=[rfid_validator, InputRequired()])
+                              get_pk=lambda a: a.id,
+                              allow_blank=True,
+                              blank_text='',
+                              validators=[DataRequired(), waiver_validator])
+    badge = IntegerField('Badge', validators=[rfid_validator, InputRequired()])
 
-    
+
 class BadgeRequest(BaseView):
     def is_accessible(self):
         return current_user.is_authenticated()
-        
+
     def _handle_view(self, name, **kwargs):
         if not self.is_accessible():
             flash('Please log in to access this page.', 'error')
             return redirect(url_for('login.index', next=request.url))
-        
+
     @expose('/', methods=('GET', 'POST'))
     def index(self):
         form = BadgeRequestForm(request.form)
-        
+
         if (request.method == "POST") and form.validate():
             user = form.member.data
-            
+
             record = Badges(user.id, form.badge.data, 'Pending')
             db.session.add(record)
             db.session.commit()
-            
+
             """
                 Auto-activation:
                 * The user has signed a waiver at the Smartwaiver kiosk.
                 * User is admin it's the requester's own badge.
-                
+
                 Set to pending and e-mail admin for action:
                 * The user has signed a waiver at the Smartwaiver kiosk.
                 * NOT the requester's own badge and is NOT an admin
             """
             if ((current_user.is_admin() or (current_user.email == user.email))):
                 result = change_badge_status('Active', record)
-                
+
                 if "error" in result:
                     raise Exception("%s" % (result['error']))
-                
+
                 record.status = 'Active'
                 db.session.commit()
-                
-                flash("Request Successful: %s's badge has been activated automatically." % (user.full_name,))                
+
+                flash("Request Successful: %s's badge has been activated automatically." % (user.full_name,))
             else:
                 message = '''
                     <p>%s's badge has been submitted by %s %s for activation.</p>
@@ -153,7 +156,7 @@ class BadgeRequest(BaseView):
                        url_for('badges.index_view', flt0_status_equals='Pending', _external=True))
                 subject = 'Badge Pending - Already Signed Waiver'
                 send_email(subject, message, user)
-                
+
                 flash("Request Successful: %s's badge has been submitted for admin approval." % (user.full_name,))
-        
+
         return self.render('create.html', form=form)

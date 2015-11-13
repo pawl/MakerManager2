@@ -1,5 +1,5 @@
 Flask==0.10.1
--e git://github.com/mrjoes/flask-admin.git@3c2b7122eb796b78d7ea4dde1386b7e18ad49920#egg=Flask_Admin-dev
+-e git://github.com/flask-admin/flask-admin.git@beb384268c65b4699ca740c1eb064897af95873b#egg=Flask_Admin-dev
 Flask-Login==0.2.11
 Flask-Mandrill==0.2
 Flask-SQLAlchemy==2.0

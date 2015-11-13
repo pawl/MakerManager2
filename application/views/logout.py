@@ -9,7 +9,7 @@ class Logout(BaseView):
             No need to use framework to display the link.
         """
         return False
-        
+
     @expose('/')
     def index(self):
         if current_user.is_authenticated():

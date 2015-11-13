@@ -18,7 +18,7 @@ def run():
 @manager.command
 def test():
     app.config['TESTING'] = True
-    app.run(host='0.0.0.0', debug=True)
+    app.run(debug=True)
 
 
 @manager.command
@@ -31,23 +31,23 @@ def initdb():
     db.create_all()
 
     client = WHMCSclients('Benjamin', 'Groves', 'ben.groves.tx@gmail.com')
-    
+
     db.session.add(client)
     db.session.commit()
-    
+
     badge = Badges(client.id, 123456, 'Deactivated')
-    
+
     db.session.add(badge)
     db.session.commit()
-    
+
     next_week = date.today() + timedelta(days=7)
     product = WHMCSproducts(client.id, next_week, u'Active')
-    
+
     db.session.add(product)
     db.session.commit()
-    
+
     addon = WHMCSaddons(client.id, u'Active', next_week)
-    
+
     db.session.add(addon)
     db.session.commit()
 
