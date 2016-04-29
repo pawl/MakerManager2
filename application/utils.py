@@ -1,12 +1,14 @@
-import urllib2
 import urllib
-
-from flask import flash, url_for, redirect, request
-from application import app, mandrill, db
-from application.models import BadgesHistory
-from flask.ext.login import current_user, AnonymousUserMixin
-from bs4 import BeautifulSoup
+import urllib2
 from datetime import datetime
+
+from bs4 import BeautifulSoup
+from flask import flash, redirect, request, url_for
+from flask.ext.login import AnonymousUserMixin, current_user
+from sparkpost import SparkPost
+
+from application import app, db
+from application.models import BadgesHistory
 
 
 class AnonymousUser(AnonymousUserMixin):
@@ -153,14 +155,15 @@ def send_email(subject, message, user, email_admins=True):
     if not app.config.get('TESTING'):
         # only send email to admins if it's a pending request
         if email_admins:
-            email_addresses = [{'email': app.config['ADMIN_EMAIL']}]
+            email_addresses = [app.config['ADMIN_EMAIL']]
         else:
-            email_addresses = [{'email': user.email}]
+            email_addresses = [user.email]
 
         if email_addresses:
-            mandrill.send_email(
+            sp = SparkPost(app.config['SPARKPOST_API_KEY'])
+            sp.transmissions.send(
                 from_email=app.config['ADMIN_EMAIL'],
                 subject=subject,
-                to=email_addresses,
+                recipients=email_addresses,
                 html=html
             )

@@ -35,7 +35,7 @@ Improvements over MakerManager 1.0
 TODO
 ---
 * Add CSRF protection
-* Catch "no route to host" error when the webservice is down. 
+* Catch "no route to host" error when the webservice is down.
 * More unit tests.
 * Simplify the query in `BadgeRequest` that populates the dropdown - by using the ORM.
 * Add filtering to "Total Products + Addons" and "Active Badges" on admin view. Currently, filtering on a hybrid property is giving me `TypeError: Boolean value of this clause is not defined`.
@@ -62,7 +62,7 @@ BASE_DN = 'ou=people,' + DC_STRING
 * ADMIN_EMAIL - Email address that "pending" badge requests will be sent to.
 * WHMCS_URL = 'https://yourdomain.com/whmcs/dologin.php'
 * SMARTWAIVER_KEY - An API key for SmartWaiver that can be requested here: https://www.smartwaiver.com/m/user/sw_login.php?wms_login=1&wms_login_redirect=%2Fm%2Frest%2F
-* MANDRILL_API_KEY - Get an API key from the Mandrill settings page, also follow their instructions to set the appropriate DNS settings on your domain. This is required to send email.
+* SPARKPOST_API_KEY - Get an API key from the SparkPost settings page, also follow their instructions to set the appropriate DNS settings on your domain. This is required to send email.
 * SERVER_URL - The URL for the site, required for sending e-mail with links back to MakerManager.
 * IP_WHITELIST - A list of IP addresses allowed to use the API.
 
@@ -93,7 +93,7 @@ function deactivate_badge($vars) {
 	logActivity("Attempting to deactivate badge");
 	$apiKey = "secret"
 	$userid = $vars['params']['clientsdetails']['userid'];
-	$url = 'https://www.yourdomain.com/makermanager/badgeapi/?status=Deactivated&apiKey=' . 
+	$url = 'https://www.yourdomain.com/makermanager/badgeapi/?status=Deactivated&apiKey=' .
 	        $apiKey . '&whmcs_user_id=' . $userid;
 	$response = curlCall($url);
 	logActivity("WHMCS User ID: " . $userid . ", Response: " . $response);

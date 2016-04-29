@@ -2,7 +2,6 @@ from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import LoginManager
 from flask.ext.admin import Admin
-from flask.ext.mandrill import Mandrill
 
 app = Flask(__name__, static_url_path='/assets')
 app.config.from_object('application.config')
@@ -17,9 +16,6 @@ db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login.index'  # for @login_required
-
-# for sending e-mail through mandrillapp.com
-mandrill = Mandrill(app)
 
 from application.models import *
 

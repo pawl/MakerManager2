@@ -21,7 +21,7 @@ WHMCS_URL = 'https://yourdomain.com/whmcs/dologin.php'
 
 SMARTWAIVER_KEY = 'secret'
 
-MANDRILL_API_KEY = 'secret'
+SPARKPOST_API_KEY = 'secret'
 
 IP_WHITELIST = ['127.0.0.1']
 
